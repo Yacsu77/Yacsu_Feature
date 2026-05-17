@@ -1,0 +1,12 @@
+.vanta-net {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Vanta injects a canvas — keep it below text */
+.vanta-net canvas {
+  display: block;
+  pointer-events: none;
+}

@@ -1,0 +1,69 @@
+.landing {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+/* ─── Title block ─────────────────────────────────────── */
+.landing__title-block {
+  position: absolute;
+  top: 7vh;
+  right: 5vw;
+  z-index: 10;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ─── Credits row ─────────────────────────────────────── */
+.landing__credits {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+}
+
+.landing__offering {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(0.55rem, 0.8vw, 0.72rem);
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: #1a1a2e;
+  opacity: 0.45;
+  display: block;
+}
+
+/* ─── Author block ────────────────────────────────────── */
+.landing__author-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+.landing__author-name {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(0.75rem, 1.1vw, 0.95rem);
+  font-weight: 700;
+  color: #1a1a2e;
+  letter-spacing: 0.05em;
+}
+
+.landing__author-role {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(0.55rem, 0.75vw, 0.68rem);
+  color: #1a1a2e;
+  opacity: 0.5;
+  letter-spacing: 0.04em;
+}
+
+/* ─── Music badge ─────────────────────────────────────── */
+.landing__music {
+  position: absolute;
+  bottom: 2.5rem;
+  right: 5vw;
+  z-index: 10;
+}

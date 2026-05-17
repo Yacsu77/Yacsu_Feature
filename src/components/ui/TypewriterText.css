@@ -1,0 +1,25 @@
+.typewriter {
+  display: inline;
+}
+
+.typewriter__cursor {
+  display: inline-block;
+  width: 2px;
+  height: 0.85em;
+  background: #1a1a2e;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 0.75s step-end infinite;
+  opacity: 1;
+  transition: opacity 0.6s ease;
+}
+
+.typewriter__cursor--done {
+  opacity: 0;
+  animation: none;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}

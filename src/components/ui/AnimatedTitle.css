@@ -1,0 +1,19 @@
+.animated-title {
+  font-family: 'Arena', sans-serif;
+  font-size: clamp(2rem, 5vw, 5.5rem);
+  font-weight: 400;
+  color: #1a1a2e;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  user-select: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.animated-title__letter {
+  display: inline-block;
+  cursor: default;
+  will-change: transform, color;
+  /* space chars should keep width but not trigger effects */
+}
