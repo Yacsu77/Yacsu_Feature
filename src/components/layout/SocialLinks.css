@@ -1,0 +1,20 @@
+.social-links {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.social-links__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a2e;
+  opacity: 0.55;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  text-decoration: none;
+}
+
+.social-links__item:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}

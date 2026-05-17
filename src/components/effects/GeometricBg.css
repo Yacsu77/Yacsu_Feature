@@ -1,0 +1,15 @@
+.geometric-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #ffffff;
+  pointer-events: none;
+}
+
+.geometric-bg canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

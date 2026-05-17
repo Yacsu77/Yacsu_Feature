@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANIMUS // GLITCH TRANSIT</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&display=swap');
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --r: #ff003c;
+  --g: #00ff9f;
+  --b: #00cfff;
+  --gold: #c9a84c;
+  --dark: #080808;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--dark);
+  font-family: 'Share Tech Mono', monospace;
+  cursor: none;
+}
+
+/* CURSOR */
+#cursor {
+  position: fixed; width: 18px; height: 18px;
+  border: 1px solid var(--gold);
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width .15s, height .15s;
+}
+#cursor::before {
+  content: '';
+  position: absolute; top: 50%; left: 50%;
+  width: 4px; height: 4px;
+  background: var(--gold);
+  transform: translate(-50%, -50%);
+}
+body:has(.screen.active[data-screen="2"]) #cursor {
+  border-color: var(--b);
+}
+
+/* SCREENS */
+.screen {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0s;
+}
+.screen.active { opacity: 1; pointer-events: all; }
+
+/* ===== SCREEN 1 — ANIMUS SYNC ===== */
+#s1 { background: var(--dark); }
+
+.animus-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.corner { position: absolute; width: 28px; height: 28px; }
+.corner::before, .corner::after { content: ''; position: absolute; background: var(--gold); }
+.corner::before { width: 100%; height: 1px; top: 0; left: 0; }
+.corner::after  { width: 1px; height: 100%; top: 0; left: 0; }
+.corner.tl { top: 32px; left: 32px; }
+.corner.tr { top: 32px; right: 32px; transform: scaleX(-1); }
+.corner.bl { bottom: 32px; left: 32px; transform: scaleY(-1); }
+.corner.br { bottom: 32px; right: 32px; transform: scale(-1); }
+
+.animus-tag {
+  position: absolute; top: 36px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px; letter-spacing: .3em;
+  color: rgba(201,168,76,.4); text-transform: uppercase;
+}
+
+.animus-sync-bar {
+  position: absolute; bottom: 48px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 14px;
+}
+.sync-label { font-size: 10px; letter-spacing: .2em; color: rgba(201,168,76,.5); }
+.sync-line {
+  width: 140px; height: 1px; background: rgba(201,168,76,.15);
+  position: relative;
+}
+.sync-fill {
+  height: 100%; background: var(--gold);
+  animation: syncpulse 3s ease-in-out infinite;
+}
+@keyframes syncpulse {
+  0%,100% { width: 82%; } 50% { width: 96%; }
+}
+
+.skull-icon {
+  width: 60px; height: 60px;
+  margin-bottom: 24px; opacity: .7;
+}
+
+.s1-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(52px, 9vw, 96px);
+  letter-spacing: .12em;
+  color: #fff;
+  line-height: 1;
+  text-align: center;
+  position: relative;
+}
+.s1-title span { color: var(--gold); }
+
+.s1-sub {
+  font-size: 11px; letter-spacing: .35em; text-transform: uppercase;
+  color: rgba(255,255,255,.3); margin-top: 12px; margin-bottom: 48px;
+}
+
+.enter-btn {
+  position: relative;
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px; letter-spacing: .3em;
+  text-transform: uppercase;
+  padding: 14px 42px;
+  cursor: none;
+  overflow: hidden;
+  transition: color .2s;
+}
+.enter-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: var(--gold);
+  transform: translateX(-100%);
+  transition: transform .3s ease;
+}
+.enter-btn:hover::before { transform: translateX(0); }
+.enter-btn:hover { color: #000; }
+.enter-btn span { position: relative; z-index: 1; }
+
+.scan-line {
+  position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(0,0,0,.08) 2px, rgba(0,0,0,.08) 4px
+  );
+}
+
+/* ===== SCREEN 2 — MEMORY SEQUENCE ===== */
+#s2 { background: #020d14; }
+
+.s2-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,207,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,207,255,.03) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+.s2-corner { position: absolute; width: 24px; height: 24px; }
+.s2-corner::before, .s2-corner::after { content: ''; position: absolute; background: var(--b); opacity: .5; }
+.s2-corner::before { width: 100%; height: 1px; top: 0; left: 0; }
+.s2-corner::after  { width: 1px; height: 100%; top: 0; left: 0; }
+.s2-corner.tl { top: 28px; left: 28px; }
+.s2-corner.tr { top: 28px; right: 28px; transform: scaleX(-1); }
+.s2-corner.bl { bottom: 28px; left: 28px; transform: scaleY(-1); }
+.s2-corner.br { bottom: 28px; right: 28px; transform: scale(-1); }
+
+.memory-tag {
+  position: absolute; top: 32px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px; letter-spacing: .3em;
+  color: rgba(0,207,255,.35); text-transform: uppercase;
+}
+
+.s2-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(40px, 7vw, 80px);
+  letter-spacing: .14em; color: #fff;
+  text-align: center; line-height: 1.1;
+}
+.s2-title span { color: var(--b); }
+
+.memory-seq {
+  margin-top: 32px;
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 16px; width: min(440px, 88vw);
+}
+.mem-card {
+  border: 1px solid rgba(0,207,255,.18);
+  padding: 18px 14px;
+  text-align: center; cursor: none;
+  transition: border-color .2s, background .2s;
+  position: relative; overflow: hidden;
+}
+.mem-card::after {
+  content: ''; position: absolute;
+  bottom: 0; left: 0; right: 0; height: 2px;
+  background: var(--b); transform: scaleX(0);
+  transition: transform .3s;
+}
+.mem-card:hover { background: rgba(0,207,255,.06); border-color: rgba(0,207,255,.5); }
+.mem-card:hover::after { transform: scaleX(1); }
+.mem-num { font-size: 22px; color: var(--b); font-family: 'Bebas Neue', cursive; letter-spacing: .1em; }
+.mem-label { font-size: 9px; letter-spacing: .2em; color: rgba(255,255,255,.35); text-transform: uppercase; margin-top: 4px; }
+
+.back-btn {
+  margin-top: 40px;
+  background: transparent; border: 1px solid rgba(0,207,255,.3);
+  color: rgba(0,207,255,.6); font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; letter-spacing: .3em; text-transform: uppercase;
+  padding: 10px 30px; cursor: none; transition: all .2s;
+}
+.back-btn:hover { border-color: var(--b); color: var(--b); background: rgba(0,207,255,.06); }
+
+/* ===== GLITCH OVERLAY ===== */
+#glitch-overlay {
+  position: fixed; inset: 0;
+  z-index: 1000; pointer-events: none;
+  opacity: 0;
+}
+
+#glitch-canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+
+.glitch-noise {
+  position: absolute; inset: 0;
+  opacity: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 1px,
+    rgba(255,255,255,.015) 1px, rgba(255,255,255,.015) 2px
+  );
+}
+
+.rgb-layer {
+  position: absolute; inset: 0;
+  mix-blend-mode: screen; opacity: 0;
+}
+#rl-r { background: var(--r); }
+#rl-g { background: var(--g); }
+#rl-b { background: var(--b); }
+
+.glitch-bar {
+  position: absolute; left: 0; right: 0;
+  height: 4px; opacity: 0;
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+
+<!-- GLITCH OVERLAY -->
+<div id="glitch-overlay">
+  <canvas id="glitch-canvas"></canvas>
+  <div class="glitch-noise" id="gn"></div>
+  <div class="rgb-layer" id="rl-r"></div>
+  <div class="rgb-layer" id="rl-g"></div>
+  <div class="rgb-layer" id="rl-b"></div>
+</div>
+
+<!-- SCREEN 1 -->
+<div class="screen active" data-screen="1" id="s1">
+  <div class="animus-grid"></div>
+  <div class="scan-line"></div>
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+  <div class="animus-tag">ANIMUS // v4.3.1 // SYNCHRONIZING</div>
+
+  <svg class="skull-icon" viewBox="0 0 60 60" fill="none">
+    <path d="M30 4C17.85 4 8 13.85 8 26c0 7.5 3.8 14.1 9.6 18.2V50h24.8v-5.8C48.2 40.1 52 33.5 52 26 52 13.85 42.15 4 30 4z" stroke="#c9a84c" stroke-width="1.2" fill="none"/>
+    <rect x="20" y="48" width="6" height="8" rx="1" stroke="#c9a84c" stroke-width="1.2"/>
+    <rect x="34" y="48" width="6" height="8" rx="1" stroke="#c9a84c" stroke-width="1.2"/>
+    <circle cx="22" cy="26" r="6" stroke="#c9a84c" stroke-width="1.2"/>
+    <circle cx="38" cy="26" r="6" stroke="#c9a84c" stroke-width="1.2"/>
+    <path d="M28 38h4M26 42h8" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round"/>
+  </svg>
+
+  <div class="s1-title">ASSASSIN'S<br><span>CREED</span></div>
+  <div class="s1-sub">Black Flag // Memory Sequence</div>
+  <button class="enter-btn" id="btn-enter"><span>[ ENTER ANIMUS ]</span></button>
+
+  <div class="animus-sync-bar">
+    <span class="sync-label">SYNC</span>
+    <div class="sync-line"><div class="sync-fill"></div></div>
+    <span class="sync-label">DNA</span>
+  </div>
+</div>
+
+<!-- SCREEN 2 -->
+<div class="screen" data-screen="2" id="s2">
+  <div class="s2-grid"></div>
+  <div class="scan-line"></div>
+  <div class="s2-corner tl"></div>
+  <div class="s2-corner tr"></div>
+  <div class="s2-corner bl"></div>
+  <div class="s2-corner br"></div>
+  <div class="memory-tag">ABSTERGO INDUSTRIES // MEMORY LOADED</div>
+
+  <div class="s2-title">MEMORY<br><span>SEQUENCE IV</span></div>
+
+  <div class="memory-seq">
+    <div class="mem-card"><div class="mem-num">01</div><div class="mem-label">Nassau</div></div>
+    <div class="mem-card"><div class="mem-num">02</div><div class="mem-label">Caribbean</div></div>
+    <div class="mem-card"><div class="mem-num">03</div><div class="mem-label">Havana</div></div>
+    <div class="mem-card"><div class="mem-num">04</div><div class="mem-label">Kingston</div></div>
+    <div class="mem-card"><div class="mem-num">05</div><div class="mem-label">Shipwreck</div></div>
+    <div class="mem-card"><div class="mem-num">06</div><div class="mem-label">Observatory</div></div>
+  </div>
+
+  <button class="back-btn" id="btn-back">[ DESYNC // RETURN ]</button>
+</div>
+
+<script>
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+});
+
+const overlay = document.getElementById('glitch-overlay');
+const gc = document.getElementById('glitch-canvas');
+const ctx = gc.getContext('2d');
+const gn = document.getElementById('gn');
+const rlR = document.getElementById('rl-r');
+const rlG = document.getElementById('rl-g');
+const rlB = document.getElementById('rl-b');
+
+function resizeCanvas() {
+  gc.width = window.innerWidth;
+  gc.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+let currentScreen = 1;
+let glitching = false;
+
+function rand(a, b) { return Math.random() * (b - a) + a; }
+function randInt(a, b) { return Math.floor(rand(a, b)); }
+
+function drawGlitchFrame(intensity) {
+  const W = gc.width, H = gc.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const numBars = randInt(4, 14);
+  for (let i = 0; i < numBars; i++) {
+    const y = rand(0, H);
+    const h = rand(1, 18);
+    const shift = rand(-60, 60) * intensity;
+    const alpha = rand(0.15, 0.55) * intensity;
+    const which = Math.random();
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    if (which < 0.33) ctx.fillStyle = '#ff003c';
+    else if (which < 0.66) ctx.fillStyle = '#00ff9f';
+    else ctx.fillStyle = '#00cfff';
+    ctx.fillRect(0, y, W, h);
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalAlpha = rand(0.1, 0.3) * intensity;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(shift, y, W * rand(0.2, 0.9), h * 0.4);
+    ctx.restore();
+  }
+
+  const numBlocks = randInt(2, 8);
+  for (let i = 0; i < numBlocks; i++) {
+    const bx = rand(0, W * 0.8);
+    const by = rand(0, H);
+    const bw = rand(40, 300);
+    const bh = rand(2, 30);
+    const shiftX = rand(-80, 80) * intensity;
+    ctx.save();
+    ctx.globalAlpha = rand(0.05, 0.25) * intensity;
+    ctx.fillStyle = Math.random() > 0.5 ? '#000' : '#fff';
+    ctx.fillRect(bx + shiftX, by, bw, bh);
+    ctx.restore();
+  }
+}
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function setRGB(rX, rO, gX, gO, bX, bO) {
+  rlR.style.transform = `translateX(${rX}px)`;
+  rlR.style.opacity = rO;
+  rlG.style.transform = `translateX(${gX}px)`;
+  rlG.style.opacity = gO;
+  rlB.style.transform = `translateX(${bX}px)`;
+  rlB.style.opacity = bO;
+}
+
+function triggerGlitch(toScreen) {
+  if (glitching) return;
+  glitching = true;
+
+  const fromScreen = currentScreen;
+  const s1 = document.getElementById('s1');
+  const s2 = document.getElementById('s2');
+
+  overlay.style.opacity = '1';
+  overlay.style.pointerEvents = 'all';
+
+  let start = null;
+  const DURATION = 900;
+  let frameId;
+  let switched = false;
+
+  function tick(ts) {
+    if (!start) start = ts;
+    const elapsed = ts - start;
+    const t = Math.min(elapsed / DURATION, 1);
+
+    const phase = t < 0.5 ? t * 2 : (1 - t) * 2;
+    const intensity = Math.pow(phase, 0.6);
+
+    drawGlitchFrame(intensity);
+    gn.style.opacity = intensity * 0.9;
+
+    const rgbIntensity = intensity * 1.0;
+    const rShift = rand(-1, 1) > 0 ? rand(20, 55) : rand(-55, -20);
+    const gShift = rand(-1, 1) > 0 ? rand(15, 40) : rand(-40, -15);
+    const bShift = -rShift * 0.7 + rand(-10, 10);
+
+    if (intensity > 0.1) {
+      setRGB(
+        rShift * intensity, rgbIntensity * 0.18,
+        gShift * intensity, rgbIntensity * 0.12,
+        bShift * intensity, rgbIntensity * 0.18
+      );
+    } else {
+      setRGB(0, 0, 0, 0, 0, 0);
+    }
+
+    if (t >= 0.45 && !switched) {
+      switched = true;
+      if (toScreen === 2) {
+        s1.classList.remove('active');
+        s2.classList.add('active');
+      } else {
+        s2.classList.remove('active');
+        s1.classList.add('active');
+      }
+      currentScreen = toScreen;
+    }
+
+    if (t < 1) {
+      frameId = requestAnimationFrame(tick);
+    } else {
+      ctx.clearRect(0, 0, gc.width, gc.height);
+      gn.style.opacity = '0';
+      setRGB(0, 0, 0, 0, 0, 0);
+      overlay.style.opacity = '0';
+      overlay.style.pointerEvents = 'none';
+      glitching = false;
+    }
+  }
+
+  frameId = requestAnimationFrame(tick);
+}
+
+document.getElementById('btn-enter').addEventListener('click', () => triggerGlitch(2));
+document.getElementById('btn-back').addEventListener('click', () => triggerGlitch(1));
+
+let ambientFrame;
+function ambientGlitch() {
+  if (glitching) { ambientFrame = requestAnimationFrame(ambientGlitch); return; }
+  if (Math.random() < 0.008) {
+    const intensity = rand(0.03, 0.18);
+    drawGlitchFrame(intensity);
+    overlay.style.opacity = '1';
+    setTimeout(() => {
+      if (!glitching) {
+        ctx.clearRect(0, 0, gc.width, gc.height);
+        overlay.style.opacity = '0';
+      }
+    }, rand(40, 120));
+  }
+  ambientFrame = requestAnimationFrame(ambientGlitch);
+}
+ambientGlitch();
+</script>
+</body>
+</html>

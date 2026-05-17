@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&display=swap');
+
+.page-tpl {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #080808;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+/* ── Subtle grid ────────────────────────────────── */
+.page-tpl__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(201, 168, 76, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201, 168, 76, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+
+/* ── Corner brackets ─────────────────────────────── */
+.page-tpl__corner {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+}
+.page-tpl__corner::before,
+.page-tpl__corner::after {
+  content: '';
+  position: absolute;
+  background: rgba(201, 168, 76, 0.6);
+}
+.page-tpl__corner::before { width: 100%; height: 1px; top: 0; left: 0; }
+.page-tpl__corner::after  { width: 1px; height: 100%; top: 0; left: 0; }
+.page-tpl__corner--tl { top: 32px; left: 32px; }
+.page-tpl__corner--tr { top: 32px; right: 32px; transform: scaleX(-1); }
+.page-tpl__corner--bl { bottom: 32px; left: 32px; transform: scaleY(-1); }
+.page-tpl__corner--br { bottom: 32px; right: 32px; transform: scale(-1); }
+
+/* ── Page tag ────────────────────────────────────── */
+.page-tpl__tag {
+  position: absolute;
+  top: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: rgba(201, 168, 76, 0.35);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── Content ─────────────────────────────────────── */
+.page-tpl__content {
+  text-align: center;
+  z-index: 1;
+}
+
+.page-tpl__title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(52px, 9vw, 96px);
+  letter-spacing: 0.12em;
+  color: #fff;
+  line-height: 1;
+}
+
+/* ── Back button ─────────────────────────────────── */
+.page-tpl__back {
+  position: absolute;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: transparent;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  color: rgba(201, 168, 76, 0.6);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  padding: 10px 32px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  z-index: 1;
+}
+
+.page-tpl__back:hover {
+  border-color: rgba(201, 168, 76, 0.8);
+  color: rgba(201, 168, 76, 1);
+  background: rgba(201, 168, 76, 0.06);
+}

@@ -3,22 +3,41 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background: #ffffff;
 }
 
-/* ─── Title block ─────────────────────────────────────── */
-.landing__title-block {
+/* ─── Logo — topo esquerdo ─────────────────────────────────── */
+.landing__logo {
   position: absolute;
-  top: 7vh;
-  right: 5vw;
+  top: 2.5vh;
+  left: 0;
   z-index: 10;
+  line-height: 0;
+}
+
+/* ─── Menu lateral — colado na borda esquerda, embaixo ─────── */
+.landing__left {
+  position: absolute;
+  left: 0;
+  bottom: calc(2.5rem + 2.75rem);
+  z-index: 10;
+  width: clamp(300px, 38vw, 560px);
+}
+
+/* ─── Painel direito — título ──────────────────────────────── */
+.landing__right-panel {
+  position: absolute;
+  top: 5vh;
+  right: 3vw;
+  z-index: 10;
+}
+
+.landing__title-block {
   text-align: right;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-/* ─── Credits row ─────────────────────────────────────── */
 .landing__credits {
   display: flex;
   flex-direction: column;
@@ -28,7 +47,7 @@
 
 .landing__offering {
   font-family: 'Space Mono', monospace;
-  font-size: clamp(0.55rem, 0.8vw, 0.72rem);
+  font-size: clamp(0.5rem, 0.75vw, 0.68rem);
   text-transform: uppercase;
   letter-spacing: 0.28em;
   color: #1a1a2e;
@@ -36,7 +55,6 @@
   display: block;
 }
 
-/* ─── Author block ────────────────────────────────────── */
 .landing__author-block {
   display: flex;
   flex-direction: column;
@@ -46,7 +64,7 @@
 
 .landing__author-name {
   font-family: 'Space Mono', monospace;
-  font-size: clamp(0.75rem, 1.1vw, 0.95rem);
+  font-size: clamp(0.7rem, 1vw, 0.9rem);
   font-weight: 700;
   color: #1a1a2e;
   letter-spacing: 0.05em;
@@ -54,16 +72,23 @@
 
 .landing__author-role {
   font-family: 'Space Mono', monospace;
-  font-size: clamp(0.55rem, 0.75vw, 0.68rem);
+  font-size: clamp(0.5rem, 0.7vw, 0.63rem);
   color: #1a1a2e;
   opacity: 0.5;
   letter-spacing: 0.04em;
 }
 
-/* ─── Music badge ─────────────────────────────────────── */
+.landing__social {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 0;
+  z-index: 10;
+  padding-left: 0.75rem;
+}
+
 .landing__music {
   position: absolute;
   bottom: 2.5rem;
-  right: 5vw;
+  right: 3vw;
   z-index: 10;
 }

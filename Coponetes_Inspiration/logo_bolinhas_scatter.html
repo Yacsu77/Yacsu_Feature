@@ -1,0 +1,173 @@
+
+<style>
+  #canvas-wrap { width: 100%; display: flex; justify-content: center; align-items: center; padding: 2rem 0; min-height: 480px; }
+  canvas { cursor: crosshair; display: block; }
+</style>
+<div id="canvas-wrap"><canvas id="c" width="500" height="460"></canvas></div>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+const CX = W / 2, CY = H / 2 - 20;
+
+const REPEL_RADIUS = 80;
+const REPEL_FORCE = 5.5;
+const RETURN_SPEED = 0.085;
+const DAMPING = 0.72;
+
+function tri(cx, cy, r, rot) {
+  const pts = [];
+  for (let i = 0; i < 3; i++) {
+    const a = rot + (Math.PI * 2 * i / 3) - Math.PI / 2;
+    pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+  }
+  return pts;
+}
+
+function buildLogo() {
+  const dots = [];
+  function addPath(points, closed, step, size, color, layer) {
+    const totalPts = points.length;
+    let acc = 0;
+    for (let i = 0; i < totalPts; i++) {
+      const a = points[i];
+      const b = points[(i + 1) % totalPts];
+      if (!closed && i === totalPts - 1) break;
+      const dx = b[0] - a[0], dy = b[1] - a[1];
+      const len = Math.hypot(dx, dy);
+      const steps = Math.floor(len / step);
+      for (let s = 0; s <= steps; s++) {
+        const t = s / Math.max(steps, 1);
+        dots.push({
+          ox: a[0] + dx * t,
+          oy: a[1] + dy * t,
+          x: a[0] + dx * t,
+          y: a[1] + dy * t,
+          vx: 0, vy: 0,
+          r: size, color, layer
+        });
+      }
+    }
+  }
+
+  function addCircle(cx, cy, r, step, size, color, layer) {
+    const perim = 2 * Math.PI * r;
+    const n = Math.floor(perim / step);
+    for (let i = 0; i < n; i++) {
+      const a = (Math.PI * 2 * i / n) - Math.PI / 2;
+      dots.push({
+        ox: cx + Math.cos(a) * r,
+        oy: cy + Math.sin(a) * r,
+        x: cx + Math.cos(a) * r,
+        y: cy + Math.sin(a) * r,
+        vx: 0, vy: 0,
+        r: size, color, layer
+      });
+    }
+  }
+
+  const bigT = tri(CX, CY, 148, 0);
+  addPath(bigT, true, 9, 3.2, '#1a1a1a', 0);
+
+  const midT = tri(CX, CY + 6, 112, Math.PI);
+  addPath(midT, true, 9, 2.6, '#444', 1);
+
+  const smallT = tri(CX, CY, 82, 0);
+  addPath(smallT, true, 8, 2.0, '#222', 2);
+
+  addCircle(CX, CY + 6, 118, 8, 2.2, '#555', 3);
+
+  const boldT = tri(CX, CY + 4, 130, 0);
+  addPath(boldT, true, 5, 4.8, '#0a0a0a', 4);
+
+  const pts5 = boldT;
+  for (let i = 0; i < 6; i++) {
+    const t = i / 5;
+    const seg = Math.floor(t * 2);
+    const localT = (t * 2) % 1;
+    const a = pts5[seg], b = pts5[(seg + 1) % 3];
+    for (let d = 3.5; d <= 5; d += 1.5) {
+      dots.push({
+        ox: a[0] + (b[0]-a[0])*localT,
+        oy: a[1] + (b[1]-a[1])*localT,
+        x: a[0] + (b[0]-a[0])*localT,
+        y: a[1] + (b[1]-a[1])*localT,
+        vx: 0, vy: 0, r: d, color: '#0a0a0a', layer: 5
+      });
+    }
+  }
+
+  const cornerCircles = [
+    [CX - 148, CY + 80, 7, '#1a1a1a'],
+    [CX + 148, CY + 80, 7, '#1a1a1a'],
+    [CX, CY - 138, 5, '#1a1a1a'],
+    [CX - 118, CY + 6, 5, '#333'],
+    [CX + 118, CY + 6, 5, '#333'],
+  ];
+  cornerCircles.forEach(([x, y, r, color]) => {
+    for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
+      dots.push({ ox: x + Math.cos(a)*r, oy: y + Math.sin(a)*r, x: x + Math.cos(a)*r, y: y + Math.sin(a)*r, vx: 0, vy: 0, r: 2.2, color, layer: 6 });
+    }
+  });
+
+  const label = ['D','A','I','L','Y','M','I','N','I','M','A','L'];
+  label.forEach((ch, i) => {
+    const lx = CX - 52 + i * 9;
+    const ly = CY + 172;
+    for (let d = 0; d < 5; d++) {
+      dots.push({ ox: lx + Math.random()*6-3, oy: ly + Math.random()*5-2, x: lx, y: ly, vx: 0, vy: 0, r: 1.5, color: '#888', layer: 7 });
+    }
+  });
+
+  const no155 = Array.from('NO. 155');
+  no155.forEach((ch, i) => {
+    const lx = CX - 28 + i * 9;
+    const ly = CY + 188;
+    for (let d = 0; d < 6; d++) {
+      dots.push({ ox: lx + Math.random()*5-2, oy: ly + Math.random()*4-2, x: lx, y: ly, vx: 0, vy: 0, r: 1.8, color: '#555', layer: 8 });
+    }
+  });
+
+  return dots;
+}
+
+const dots = buildLogo();
+
+let mx = -999, my = -999;
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  mx = (e.clientX - rect.left) * scaleX;
+  my = (e.clientY - rect.top) * scaleY;
+});
+canvas.addEventListener('mouseleave', () => { mx = -999; my = -999; });
+
+function loop() {
+  ctx.clearRect(0, 0, W, H);
+
+  for (const d of dots) {
+    const dx = d.x - mx, dy = d.y - my;
+    const dist = Math.hypot(dx, dy);
+    if (dist < REPEL_RADIUS && dist > 0) {
+      const force = (REPEL_RADIUS - dist) / REPEL_RADIUS;
+      d.vx += (dx / dist) * force * REPEL_FORCE;
+      d.vy += (dy / dist) * force * REPEL_FORCE;
+    }
+    d.vx += (d.ox - d.x) * RETURN_SPEED;
+    d.vy += (d.oy - d.y) * RETURN_SPEED;
+    d.vx *= DAMPING;
+    d.vy *= DAMPING;
+    d.x += d.vx;
+    d.y += d.vy;
+
+    ctx.beginPath();
+    ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+    ctx.fillStyle = d.color;
+    ctx.fill();
+  }
+
+  requestAnimationFrame(loop);
+}
+loop();
+</script>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geometric Background</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: #0a0a0f;
+  cursor: none;
+}
+#three-canvas {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%;
+}
+#cursor {
+  position: fixed;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.6);
+  pointer-events: none;
+  z-index: 100;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s;
+}
+#cursor-ring {
+  position: fixed;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.2);
+  pointer-events: none;
+  z-index: 100;
+  transform: translate(-50%, -50%);
+}
+</style>
+</head>
+<body>
+
+<canvas id="three-canvas"></canvas>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const canvas = document.getElementById('three-canvas');
+const W = window.innerWidth, H = window.innerHeight;
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setSize(W, H);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x0a0a0f, 1);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 1000);
+camera.position.set(0, 0, 28);
+
+const fog = new THREE.FogExp2(0x0a0a0f, 0.022);
+scene.fog = fog;
+
+const PALETTE = [
+  0xffffff,
+  0xaaccff,
+  0x8899dd,
+  0xccddff,
+  0x6677aa,
+  0xddeeff,
+];
+
+function rnd(a, b) { return Math.random() * (b - a) + a; }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+const wireframeMat = (color, opacity = 1) => new THREE.MeshBasicMaterial({
+  color,
+  wireframe: true,
+  transparent: opacity < 1,
+  opacity,
+});
+
+const edgeMat = (color, opacity = 1) => new THREE.LineBasicMaterial({
+  color,
+  transparent: opacity < 1,
+  opacity,
+  linewidth: 1,
+});
+
+function makeEdges(geo, color, opacity) {
+  const edges = new THREE.EdgesGeometry(geo);
+  return new THREE.LineSegments(edges, edgeMat(color, opacity));
+}
+
+class GeoShape {
+  constructor() {
+    this.group = new THREE.Group();
+    const color = pick(PALETTE);
+    const opacity = rnd(0.15, 0.75);
+    const type = Math.floor(rnd(0, 7));
+    let geo, mesh;
+
+    const s = rnd(0.5, 2.8);
+
+    if (type === 0) {
+      geo = new THREE.OctahedronGeometry(s, 0);
+    } else if (type === 1) {
+      geo = new THREE.IcosahedronGeometry(s, 0);
+    } else if (type === 2) {
+      geo = new THREE.TetrahedronGeometry(s, 0);
+    } else if (type === 3) {
+      geo = new THREE.BoxGeometry(s, s, s);
+    } else if (type === 4) {
+      geo = new THREE.DodecahedronGeometry(s, 0);
+    } else if (type === 5) {
+      geo = new THREE.CylinderGeometry(s * 0.6, s * 0.6, s * 1.4, 6, 1);
+    } else {
+      geo = new THREE.ConeGeometry(s * 0.8, s * 1.6, 5, 1);
+    }
+
+    const wMesh = makeEdges(geo, color, opacity);
+    this.group.add(wMesh);
+
+    if (Math.random() > 0.55) {
+      const inner = geo.clone();
+      const innerMesh = makeEdges(inner, color, opacity * 0.3);
+      innerMesh.scale.setScalar(0.6);
+      this.group.add(innerMesh);
+    }
+
+    this.group.position.set(rnd(-22, 22), rnd(-14, 14), rnd(-18, 8));
+    this.group.rotation.set(rnd(0, Math.PI * 2), rnd(0, Math.PI * 2), rnd(0, Math.PI * 2));
+
+    this.vRot = new THREE.Vector3(
+      rnd(-0.003, 0.003),
+      rnd(-0.004, 0.004),
+      rnd(-0.002, 0.002)
+    );
+    this.vPos = new THREE.Vector3(
+      rnd(-0.003, 0.003),
+      rnd(-0.002, 0.002),
+      0
+    );
+    this.originY = this.group.position.y;
+    this.floatAmp = rnd(0.3, 1.2);
+    this.floatSpeed = rnd(0.3, 1.0);
+    this.floatOffset = rnd(0, Math.PI * 2);
+
+    scene.add(this.group);
+  }
+
+  update(t) {
+    this.group.rotation.x += this.vRot.x;
+    this.group.rotation.y += this.vRot.y;
+    this.group.rotation.z += this.vRot.z;
+    this.group.position.y = this.originY + Math.sin(t * this.floatSpeed + this.floatOffset) * this.floatAmp;
+  }
+}
+
+const shapes = [];
+for (let i = 0; i < 55; i++) shapes.push(new GeoShape());
+
+const particleCount = 320;
+const pGeo = new THREE.BufferGeometry();
+const pPos = new Float32Array(particleCount * 3);
+for (let i = 0; i < particleCount; i++) {
+  pPos[i * 3]     = rnd(-25, 25);
+  pPos[i * 3 + 1] = rnd(-16, 16);
+  pPos[i * 3 + 2] = rnd(-20, 5);
+}
+pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+const pMat = new THREE.PointsMaterial({ color: 0xaaccff, size: 0.06, transparent: true, opacity: 0.5 });
+scene.add(new THREE.Points(pGeo, pMat));
+
+let mx = 0, my = 0;
+let targetRX = 0, targetRY = 0;
+let currRX = 0, currRY = 0;
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let ringX = 0, ringY = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = (e.clientX / window.innerWidth - 0.5) * 2;
+  my = -(e.clientY / window.innerHeight - 0.5) * 2;
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  ringX += (e.clientX - ringX) * 0.12;
+  ringY += (e.clientY - ringY) * 0.12;
+});
+
+const clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+
+  targetRX = my * 0.8;
+  targetRY = mx * 1.2;
+  currRX += (targetRX - currRX) * 0.04;
+  currRY += (targetRY - currRY) * 0.04;
+  camera.rotation.x = currRX;
+  camera.rotation.y = currRY;
+
+  shapes.forEach(s => s.update(t));
+
+  ringX += (parseFloat(cursor.style.left || 0) - ringX) * 0.1;
+  ringY += (parseFloat(cursor.style.top || 0) - ringY) * 0.1;
+  ring.style.left = ringX + 'px';
+  ring.style.top = ringY + 'px';
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+window.addEventListener('resize', () => {
+  const W = window.innerWidth, H = window.innerHeight;
+  camera.aspect = W / H;
+  camera.updateProjectionMatrix();
+  renderer.setSize(W, H);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+.scene-viewer {
+  width: 100%;
+  height: 100%;
+}
+
+.scene-viewer canvas {
+  display: block;
+}

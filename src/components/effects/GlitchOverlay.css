@@ -1,0 +1,36 @@
+.glitch-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  transition: opacity 0s;
+}
+
+.glitch-overlay__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch-overlay__noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 1px,
+    rgba(255, 255, 255, 0.015) 1px, rgba(255, 255, 255, 0.015) 2px
+  );
+  pointer-events: none;
+}
+
+.glitch-overlay__rgb {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: screen;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.glitch-overlay__rgb--r { background: #ff003c; }
+.glitch-overlay__rgb--g { background: #00ff9f; }
+.glitch-overlay__rgb--b { background: #00cfff; }
