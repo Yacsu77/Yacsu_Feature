@@ -1,0 +1,33 @@
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.app {
+  display: flex;
+  min-height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.app__header {
+  text-align: center;
+}
+
+.app__icon {
+  color: var(--color-accent);
+  margin-bottom: 0.75rem;
+}
+
+.app__header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.app__header p {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  opacity: 0.6;
+}

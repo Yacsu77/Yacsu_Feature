@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@fonts/*": ["Fonts/*"],
+      "@sounds/*": ["Saund/*"],
+      "@models/*": ["Models3D/*"]
+    }
+  },
+  "include": ["src"]
+}
