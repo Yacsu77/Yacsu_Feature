@@ -3,27 +3,27 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  background: #010a06;
 }
 
-/* ─── Logo — topo esquerdo ─────────────────────────────────── */
-.landing__logo {
+/* ─── HUD Animus — topo esquerdo (substitui logo) ──────────── */
+.landing__hud-tl {
   position: absolute;
   top: 2.5vh;
-  left: 0;
+  left: 2.25rem;
   z-index: 10;
-  line-height: 0;
 }
 
-/* ─── Menu lateral — colado na borda esquerda, embaixo ─────── */
+/* ─── Menu lateral — esquerda embaixo ──────────────────────── */
 .landing__left {
   position: absolute;
-  left: 0;
+  left: 1.5rem;
   bottom: calc(2.5rem + 2.75rem);
   z-index: 10;
   width: clamp(300px, 38vw, 560px);
 }
 
-/* ─── Painel direito — título ──────────────────────────────── */
+/* ─── Painel direito — título com glitch por proximidade ───── */
 .landing__right-panel {
   position: absolute;
   top: 5vh;
@@ -36,6 +36,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  align-items: flex-end;
 }
 
 .landing__credits {
@@ -50,8 +51,7 @@
   font-size: clamp(0.5rem, 0.75vw, 0.68rem);
   text-transform: uppercase;
   letter-spacing: 0.28em;
-  color: #1a1a2e;
-  opacity: 0.45;
+  color: rgba(220, 235, 225, 0.45);
   display: block;
 }
 
@@ -66,24 +66,26 @@
   font-family: 'Space Mono', monospace;
   font-size: clamp(0.7rem, 1vw, 0.9rem);
   font-weight: 700;
-  color: #1a1a2e;
+  color: rgba(220, 235, 225, 0.95);
   letter-spacing: 0.05em;
 }
 
 .landing__author-role {
   font-family: 'Space Mono', monospace;
   font-size: clamp(0.5rem, 0.7vw, 0.63rem);
-  color: #1a1a2e;
-  opacity: 0.5;
+  color: rgba(220, 235, 225, 0.5);
   letter-spacing: 0.04em;
 }
 
 .landing__social {
   position: absolute;
   bottom: 2.5rem;
-  left: 0;
+  left: 1.5rem;
   z-index: 10;
-  padding-left: 0.75rem;
+}
+
+.landing__social .social-links__item {
+  color: rgba(220, 235, 225, 0.85);
 }
 
 .landing__music {
@@ -91,4 +93,17 @@
   bottom: 2.5rem;
   right: 3vw;
   z-index: 10;
+}
+
+.landing__music .music-badge__bar {
+  background: rgba(201, 168, 76, 0.9);
+}
+
+.landing__music .music-badge__title,
+.landing__music .music-badge__detail {
+  color: rgba(201, 168, 76, 0.95);
+}
+
+.landing .typewriter__cursor {
+  background: rgba(220, 235, 225, 0.7);
 }

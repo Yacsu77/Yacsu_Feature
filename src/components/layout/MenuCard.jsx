@@ -112,8 +112,8 @@ function runTick(stateRef, canvasRef) {
       ctx.globalAlpha = Math.min(1, p.alpha + boost * 0.4)
       ctx.fillStyle   = p.col
     } else {
-      ctx.globalAlpha = p.alpha * 0.5
-      ctx.fillStyle   = 'rgba(190,190,190,1)'
+      ctx.globalAlpha = Math.min(1, p.alpha * 0.82)
+      ctx.fillStyle   = p.col
     }
     ctx.beginPath(); ctx.arc(p.x, p.y, sz, 0, Math.PI * 2); ctx.fill()
     ctx.globalAlpha = 1

@@ -6,7 +6,7 @@
 /* ── Card ───────────────────────────────────────────────────── */
 .mc-card {
   position: relative;
-  background: #080808;
+  background: #161612;
   cursor: none;
 }
 
@@ -14,7 +14,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  border: 1px solid rgba(100, 100, 100, 0.3);
+  border: 1px solid rgba(180, 140, 60, 0.38);
   pointer-events: none;
   z-index: 5;
   transition: border-color 0.3s;

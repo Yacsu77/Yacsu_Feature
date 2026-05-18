@@ -1,20 +1,20 @@
-import GeometricBg    from '@/components/effects/GeometricBg'
-import AnimatedTitle  from '@/components/ui/AnimatedTitle'
+import AnimusBackground from '@/components/effects/AnimusBackground'
+import AnimusHud from '@/components/ui/AnimusHud'
+import ProximityGlitchTitle from '@/components/ui/ProximityGlitchTitle'
 import TypewriterText from '@/components/ui/TypewriterText'
-import GlitchText     from '@/components/ui/GlitchText'
-import MusicBadge     from '@/components/ui/MusicBadge'
-import LogoBolinhas   from '@/components/ui/LogoBolinhas'
-import MenuLateral    from '@/components/layout/MenuLateral'
-import SocialLinks    from '@/components/layout/SocialLinks'
+import GlitchText from '@/components/ui/GlitchText'
+import MusicBadge from '@/components/ui/MusicBadge'
+import MenuLateral from '@/components/layout/MenuLateral'
+import SocialLinks from '@/components/layout/SocialLinks'
 import './LandingPage.css'
 
 export default function LandingPage() {
   return (
     <div className="landing">
-      <GeometricBg />
+      <AnimusBackground />
 
-      <div className="landing__logo">
-        <LogoBolinhas />
+      <div className="landing__hud-tl">
+        <AnimusHud />
       </div>
 
       <div className="landing__left">
@@ -23,7 +23,7 @@ export default function LandingPage() {
 
       <div className="landing__right-panel">
         <div className="landing__title-block">
-          <AnimatedTitle />
+          <ProximityGlitchTitle />
           <div className="landing__credits">
             <span className="landing__offering">
               <TypewriterText text="oferecimentos" delay={800} speed={85} />

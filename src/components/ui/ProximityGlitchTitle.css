@@ -1,0 +1,57 @@
+.prox-title {
+  position: relative;
+  font-family: 'Arena', sans-serif;
+  font-size: clamp(2rem, 5vw, 5.5rem);
+  font-weight: 400;
+  color: #f0ebe0;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  user-select: none;
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  filter: blur(calc(var(--chroma, 0px) * 0.12));
+  transition: filter 0.12s ease;
+}
+
+.prox-title__glyph {
+  position: relative;
+  display: inline-block;
+  font-style: normal;
+  transition: transform 0.04s linear;
+}
+
+.prox-title__layer {
+  display: inline-block;
+  white-space: pre;
+}
+
+.prox-title__layer--main {
+  position: relative;
+  z-index: 3;
+  color: #f0ebe0;
+}
+
+.prox-title__layer--r {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  color: #ff2a4a;
+  transform: translateX(var(--r-shift, 0));
+  opacity: calc(var(--intensity, 0) * 0.8);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.prox-title__layer--b {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  color: #1e5cff;
+  transform: translateX(var(--b-shift, 0));
+  opacity: calc(var(--intensity, 0) * 0.8);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}

@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+.animus-hud {
+  position: relative;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  pointer-events: none;
+}
+
+.animus-hud__cluster {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding-left: 0.25rem;
+}
+
+.animus-hud__top .animus-hud__label {
+  font-size: 8px;
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: rgba(201, 168, 76, 0.45);
+}
+
+.animus-hud__seq {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  color: rgba(201, 168, 76, 0.7);
+  margin-top: 4px;
+}
+
+.animus-hud__sync-block {
+  text-align: left;
+  margin-top: 0.25rem;
+}
+
+.animus-hud__logo {
+  width: 52px;
+  height: 52px;
+  margin-bottom: 10px;
+}
+
+.animus-hud__pct {
+  font-size: 38px;
+  letter-spacing: 0.04em;
+  color: #c9a84c;
+  line-height: 1;
+  text-shadow: 0 0 40px rgba(201, 168, 76, 0.25);
+}
+
+.animus-hud__pct span {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.animus-hud__sync-label {
+  font-size: 8px;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: rgba(201, 168, 76, 0.4);
+  margin-top: 6px;
+}
+
+.animus-hud__bar-wrap {
+  width: 180px;
+  height: 2px;
+  background: rgba(201, 168, 76, 0.12);
+  margin-top: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.animus-hud__bar-fill {
+  height: 100%;
+  background: #c9a84c;
+  transition: width 0.08s linear;
+}
+
+.animus-hud__bar-sweep {
+  position: absolute;
+  top: 0;
+  left: -30%;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 220, 100, 0.6), transparent);
+  animation: animus-sweep 2s linear infinite;
+}
+
+@keyframes animus-sweep {
+  to { left: 130%; }
+}
+
+.animus-hud__right {
+  position: fixed;
+  top: 50%;
+  right: 32px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+  z-index: 10;
+}
+
+.animus-hud__item {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(201, 168, 76, 0.25);
+  line-height: 1.8;
+}
+
+.animus-hud__item b {
+  color: rgba(201, 168, 76, 0.55);
+}
+
+.animus-hud__status {
+  position: fixed;
+  bottom: 52px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 10;
+}
+
+.animus-hud__status-line {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(201, 168, 76, 0.3);
+  line-height: 2.2;
+}

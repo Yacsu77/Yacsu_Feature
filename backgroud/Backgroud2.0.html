@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANIMUS // LOADING</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #010a06; }
+
+#bg { position: fixed; inset: 0; }
+
+#ui {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  pointer-events: none;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+}
+
+.corner { position: absolute; width: 36px; height: 36px; }
+.corner::before, .corner::after { content: ''; position: absolute; background: #c9a84c; }
+.corner::before { width: 100%; height: 1px; top: 0; left: 0; }
+.corner::after  { width: 1px; height: 100%; top: 0; left: 0; }
+.corner.tl { top: 28px; left: 28px; }
+.corner.tr { top: 28px; right: 28px; transform: scaleX(-1); }
+.corner.bl { bottom: 28px; left: 28px; transform: scaleY(-1); }
+.corner.br { bottom: 28px; right: 28px; transform: scale(-1); }
+
+.hud-top {
+  position: absolute; top: 32px; left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+.hud-top .label {
+  font-size: 9px; letter-spacing: .45em; text-transform: uppercase;
+  color: rgba(201,168,76,.45);
+}
+.hud-top .seq {
+  font-size: 11px; letter-spacing: .25em;
+  color: rgba(201,168,76,.7); margin-top: 4px;
+}
+
+.center-info { text-align: center; }
+
+.animus-logo {
+  width: 72px; height: 72px; margin: 0 auto 20px;
+}
+
+.sync-pct {
+  font-size: 52px; letter-spacing: .04em;
+  color: #c9a84c; line-height: 1;
+  text-shadow: 0 0 40px rgba(201,168,76,.25);
+}
+.sync-pct span { font-size: 18px; opacity: .6; }
+
+.sync-label {
+  font-size: 9px; letter-spacing: .5em; text-transform: uppercase;
+  color: rgba(201,168,76,.4); margin-top: 8px;
+}
+
+.bar-wrap {
+  width: 220px; height: 2px;
+  background: rgba(201,168,76,.12);
+  margin: 18px auto 0; position: relative; overflow: hidden;
+}
+.bar-fill {
+  height: 100%; background: #c9a84c;
+  width: 0%; transition: width .08s linear;
+}
+.bar-sweep {
+  position: absolute; top: 0; left: -30%;
+  width: 30%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,220,100,.6), transparent);
+  animation: sweep 2s linear infinite;
+}
+@keyframes sweep { to { left: 130%; } }
+
+.status-lines {
+  position: absolute; bottom: 52px; left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+.status-line {
+  font-size: 9px; letter-spacing: .3em; text-transform: uppercase;
+  color: rgba(201,168,76,.3); line-height: 2.2;
+  opacity: 0; animation: fadein .4s forwards;
+}
+@keyframes fadein { to { opacity: 1; } }
+
+.hud-left, .hud-right {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.hud-left { left: 32px; align-items: flex-start; }
+.hud-right { right: 32px; align-items: flex-end; }
+.hud-item {
+  font-size: 9px; letter-spacing: .22em; text-transform: uppercase;
+  color: rgba(201,168,76,.25); line-height: 1.8;
+}
+.hud-item b { color: rgba(201,168,76,.55); }
+
+.glitch-char {
+  display: inline-block;
+  transition: transform .12s ease, color .12s ease, opacity .12s ease;
+  will-change: transform;
+}
+
+.hud-item, .hud-top .label, .hud-top .seq,
+.sync-label, .status-line, .sync-pct {
+  cursor: none;
+}
+
+.scan-lines {
+  position: fixed; inset: 0; pointer-events: none; z-index: 5;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 3px,
+    rgba(0,0,0,.06) 3px, rgba(0,0,0,.06) 4px
+  );
+}
+
+#cursor-dot {
+  position: fixed; width: 5px; height: 5px; border-radius: 50%;
+  background: rgba(201,168,76,.8); pointer-events: none;
+  z-index: 20; transform: translate(-50%,-50%);
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<div class="scan-lines"></div>
+
+<div id="ui">
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <div class="hud-top">
+    <div class="label">Abstergo Industries — Animus v4.3</div>
+    <div class="seq" id="seqLabel">MEMORY SEQUENCE IV · LOADING</div>
+  </div>
+
+  <div class="hud-left">
+    <div class="hud-item">DNA strand <b id="dna-val">--</b></div>
+    <div class="hud-item">Nodes active <b id="node-val">--</b></div>
+    <div class="hud-item">Sync rate <b id="rate-val">--</b></div>
+    <div class="hud-item">Depth <b id="depth-val">--</b></div>
+  </div>
+
+  <div class="hud-right">
+    <div class="hud-item"><b id="mem-val">--</b> memory blocks</div>
+    <div class="hud-item"><b id="conn-val">--</b> connections</div>
+    <div class="hud-item"><b id="lat-val">--</b> ms latency</div>
+    <div class="hud-item"><b id="temp-val">--</b>% coherence</div>
+  </div>
+
+  <div class="center-info">
+    <svg class="animus-logo" viewBox="0 0 72 72" fill="none">
+      <polygon points="36,6 66,58 6,58" stroke="#c9a84c" stroke-width="1" fill="none" opacity=".8"/>
+      <polygon points="36,18 56,52 16,52" stroke="#c9a84c" stroke-width=".6" fill="none" opacity=".4"/>
+      <line x1="36" y1="6" x2="36" y2="58" stroke="#c9a84c" stroke-width=".4" opacity=".3"/>
+      <circle cx="36" cy="36" r="5" stroke="#c9a84c" stroke-width=".8" fill="none" opacity=".7"/>
+      <circle cx="36" cy="36" r="2" fill="#c9a84c" opacity=".9"/>
+      <circle cx="36" cy="6" r="2" fill="#c9a84c" opacity=".6"/>
+      <circle cx="66" cy="58" r="2" fill="#c9a84c" opacity=".6"/>
+      <circle cx="6" cy="58" r="2" fill="#c9a84c" opacity=".6"/>
+    </svg>
+    <div class="sync-pct" id="pct">0<span>%</span></div>
+    <div class="sync-label">Synchronizing Memory</div>
+    <div class="bar-wrap">
+      <div class="bar-fill" id="bar"></div>
+      <div class="bar-sweep"></div>
+    </div>
+  </div>
+
+  <div class="status-lines" id="statusLines"></div>
+</div>
+
+<div id="cursor-dot"></div>
+
+<script>
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+let W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+let mx = W/2, my = H/2;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  const d = document.getElementById('cursor-dot');
+  d.style.left = mx + 'px'; d.style.top = my + 'px';
+});
+
+const GOLD  = 'rgba(201,168,76,';
+const TEAL  = 'rgba(0,200,130,';
+const BLUE  = 'rgba(40,160,220,';
+const WHITE = 'rgba(220,235,225,';
+
+function rnd(a,b) { return Math.random()*(b-a)+a; }
+
+class Node {
+  constructor() { this.reset(true); }
+  reset(init) {
+    this.x = rnd(0, W); this.y = rnd(0, H);
+    this.vx = rnd(-.18, .18); this.vy = rnd(-.12, .12);
+    this.r = rnd(1.2, 3.5);
+    this.pulse = rnd(0, Math.PI*2);
+    this.speed = rnd(.4, 1.2);
+    this.type = Math.random() < .12 ? 'gold' : Math.random() < .2 ? 'teal' : 'base';
+    this.opacity = rnd(.3, .9);
+    this.connections = 0;
+  }
+  update(t) {
+    this.x += this.vx; this.y += this.vy;
+    this.pulse += .02 * this.speed;
+    const dx = mx - this.x, dy = my - this.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist < 120) {
+      this.vx -= dx/dist * .012;
+      this.vy -= dy/dist * .012;
+    }
+    this.vx *= .998; this.vy *= .998;
+    if (this.x < -20) this.x = W+20;
+    if (this.x > W+20) this.x = -20;
+    if (this.y < -20) this.y = H+20;
+    if (this.y > H+20);
+  }
+  draw(t) {
+    const p = (.5 + .5*Math.sin(this.pulse)) * this.opacity;
+    let col;
+    if (this.type === 'gold') col = GOLD;
+    else if (this.type === 'teal') col = TEAL;
+    else col = WHITE;
+
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+    ctx.fillStyle = col + p + ')';
+    ctx.fill();
+
+    if (this.type === 'gold' && this.r > 2.5) {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r + 3 + Math.sin(this.pulse)*2, 0, Math.PI*2);
+      ctx.strokeStyle = col + (p*.3) + ')';
+      ctx.lineWidth = .5;
+      ctx.stroke();
+    }
+  }
+}
+
+const NODES = 140;
+const CONNECT_DIST = 110;
+const MOUSE_DIST = 160;
+
+const nodes = Array.from({length: NODES}, () => new Node());
+
+let t = 0;
+
+function drawEdge(ax, ay, bx, by, alpha, col) {
+  ctx.beginPath();
+  ctx.moveTo(ax, ay); ctx.lineTo(bx, by);
+  ctx.strokeStyle = col + alpha + ')';
+  ctx.lineWidth = alpha * 1.2;
+  ctx.stroke();
+}
+
+function drawDashedEdge(ax, ay, bx, by, alpha, offset) {
+  ctx.save();
+  ctx.setLineDash([4, 6]);
+  ctx.lineDashOffset = -offset;
+  ctx.beginPath();
+  ctx.moveTo(ax, ay); ctx.lineTo(bx, by);
+  ctx.strokeStyle = GOLD + (alpha * .5) + ')';
+  ctx.lineWidth = .5;
+  ctx.stroke();
+  ctx.restore();
+}
+
+let dashOffset = 0;
+
+function frame() {
+  requestAnimationFrame(frame);
+  t++;
+  dashOffset = (dashOffset + .4) % 20;
+
+  ctx.fillStyle = 'rgba(1,10,6,.18)';
+  ctx.fillRect(0, 0, W, H);
+
+  nodes.forEach(n => n.update(t));
+
+  for(let i=0;i<nodes.length;i++) {
+    nodes[i].connections = 0;
+    for(let j=i+1;j<nodes.length;j++) {
+      const dx = nodes[j].x - nodes[i].x;
+      const dy = nodes[j].y - nodes[i].y;
+      const dist = Math.hypot(dx, dy);
+      if(dist < CONNECT_DIST) {
+        const alpha = (1 - dist/CONNECT_DIST) * .35;
+        const isGold = nodes[i].type==='gold' || nodes[j].type==='gold';
+        const isTeal = nodes[i].type==='teal' || nodes[j].type==='teal';
+        const col = isGold ? GOLD : isTeal ? TEAL : WHITE;
+        if(isGold && dist < CONNECT_DIST*.7) {
+          drawDashedEdge(nodes[i].x,nodes[i].y,nodes[j].x,nodes[j].y,alpha,dashOffset);
+        } else {
+          drawEdge(nodes[i].x,nodes[i].y,nodes[j].x,nodes[j].y,alpha,col);
+        }
+        nodes[i].connections++; nodes[j].connections++;
+      }
+    }
+    const mdx = mx - nodes[i].x, mdy = my - nodes[i].y;
+    const mdist = Math.hypot(mdx, mdy);
+    if(mdist < MOUSE_DIST) {
+      const alpha = (1 - mdist/MOUSE_DIST) * .55;
+      drawEdge(nodes[i].x, nodes[i].y, mx, my, alpha, GOLD);
+    }
+  }
+
+  nodes.forEach(n => n.draw(t));
+
+  ctx.beginPath();
+  ctx.arc(mx, my, 4, 0, Math.PI*2);
+  ctx.fillStyle = GOLD + '.7)';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(mx, my, 14, 0, Math.PI*2);
+  ctx.strokeStyle = GOLD + '.2)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(mx, my, 28 + Math.sin(t*.05)*4, 0, Math.PI*2);
+  ctx.strokeStyle = GOLD + '.08)';
+  ctx.lineWidth = .5;
+  ctx.stroke();
+}
+
+frame();
+
+function wrapChars(el) {
+  if (el.dataset.wrapped) return;
+  el.dataset.wrapped = '1';
+  const html = el.innerHTML;
+  el.innerHTML = html.replace(/(<[^>]+>)|([^<])/g, (m, tag, ch) => {
+    if (tag) return tag;
+    if (ch === ' ') return ' ';
+    return `<span class="glitch-char">${ch}</span>`;
+  });
+}
+
+function initTextReaction() {
+  const targets = document.querySelectorAll(
+    '.hud-item, .hud-top .label, .hud-top .seq, .sync-label, .status-line'
+  );
+  targets.forEach(el => wrapChars(el));
+}
+
+const observer = new MutationObserver(() => {
+  document.querySelectorAll('.status-line:not([data-wrapped])').forEach(el => wrapChars(el));
+});
+observer.observe(document.getElementById('statusLines'), { childList: true });
+
+initTextReaction();
+
+const TEXT_RADIUS = 90;
+const TEXT_FORCE  = 18;
+const GLITCH_CHANCE = 0.004;
+
+const glitchChars = '!@#$%^&*<>?/|\\~`░▒▓█▄▀■□▪▫';
+
+function reactTexts() {
+  const chars = document.querySelectorAll('.glitch-char');
+  chars.forEach(span => {
+    const rect = span.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = cx - mx, dy = cy - my;
+    const dist = Math.hypot(dx, dy);
+
+    if (dist < TEXT_RADIUS) {
+      const force = (1 - dist / TEXT_RADIUS);
+      const nx = dx / (dist || 1), ny = dy / (dist || 1);
+      const tx = nx * force * TEXT_FORCE;
+      const ty = ny * force * TEXT_FORCE;
+      span.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px)`;
+      span.style.color = `rgba(201,168,76,${0.5 + force * 0.5})`;
+      if (Math.random() < GLITCH_CHANCE * force * 8) {
+        const orig = span.dataset.orig || span.textContent;
+        span.dataset.orig = orig;
+        span.textContent = glitchChars[Math.floor(Math.random() * glitchChars.length)];
+        setTimeout(() => { span.textContent = span.dataset.orig; }, 80);
+      }
+    } else {
+      span.style.transform = 'translate(0px,0px)';
+      span.style.color = '';
+    }
+  });
+  requestAnimationFrame(reactTexts);
+}
+reactTexts();
+
+let pct = 0;
+const MESSAGES = [
+  'Initializing Animus core...',
+  'Calibrating DNA sequence...',
+  'Loading memory blocks...',
+  'Establishing neural link...',
+  'Synchronizing ancestor data...',
+  'Rendering Caribbean, 1715...',
+  'Memory sequence ready.',
+];
+let msgIdx = 0;
+const statusEl = document.getElementById('statusLines');
+
+function addMsg(txt) {
+  const el = document.createElement('div');
+  el.className = 'status-line';
+  el.style.animationDelay = '0s';
+  el.textContent = '> ' + txt;
+  statusEl.appendChild(el);
+  if(statusEl.children.length > 4) statusEl.removeChild(statusEl.firstChild);
+}
+
+function rndHex(len) {
+  let s = '';
+  const chars = '0123456789ABCDEF';
+  for(let i=0;i<len;i++) s+=chars[Math.floor(Math.random()*16)];
+  return s;
+}
+
+addMsg(MESSAGES[0]);
+
+const interval = setInterval(() => {
+  pct = Math.min(100, pct + Math.random()*3.5 + .5);
+  document.getElementById('pct').firstChild.textContent = Math.floor(pct);
+  document.getElementById('bar').style.width = pct + '%';
+
+  document.getElementById('dna-val').textContent = '0x' + rndHex(6);
+  document.getElementById('node-val').textContent = Math.floor(pct*.6 + 40);
+  document.getElementById('rate-val').textContent = (30 + pct*.7).toFixed(1) + 'Hz';
+  document.getElementById('depth-val').textContent = (pct*.12).toFixed(2) + 'm';
+  document.getElementById('mem-val').textContent = Math.floor(pct*2.4);
+  document.getElementById('conn-val').textContent = Math.floor(pct*1.8 + 30);
+  document.getElementById('lat-val').textContent = Math.floor(rnd(2,18));
+  document.getElementById('temp-val').textContent = Math.floor(pct*.97);
+
+  if(pct >= (msgIdx+1)*14 && msgIdx < MESSAGES.length-1) {
+    msgIdx++;
+    addMsg(MESSAGES[msgIdx]);
+  }
+
+  const labels = ['LOADING','READING DNA','MAPPING','CALIBRATING','SYNCING','RENDERING','READY'];
+  const li = Math.min(Math.floor(pct/15), labels.length-1);
+  document.getElementById('seqLabel').textContent = 'MEMORY SEQUENCE IV · ' + labels[li];
+
+  if(pct >= 100) clearInterval(interval);
+}, 60);
+</script>
+</body>
+</html>
